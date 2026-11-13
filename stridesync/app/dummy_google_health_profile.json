@@ -1,0 +1,74 @@
+{
+  "device": "Google Pixel Watch 3 / Google Health",
+  "synced_at": "2026-11-13T03:00:00Z",
+  "user_metrics": {
+    "resting_heart_rate_bpm": 74,
+    "baseline_resting_heart_rate_bpm": 66,
+    "hrv_status": "slightly_suppressed",
+    "recent_sleep_avg_hours": 5.8,
+    "sleep_debt_flag": true,
+    "recovery_score_pct": 52
+  },
+  "activities_last_14_days": [
+    {
+      "id": "gh_act_001",
+      "date": "2026-11-11",
+      "type": "Run",
+      "duration_minutes": 22,
+      "distance_km": 3.1,
+      "avg_heart_rate_bpm": 152,
+      "rpe": 6,
+      "source": "Google Health Sync"
+    },
+    {
+      "id": "gh_act_002",
+      "date": "2026-11-09",
+      "type": "Walk",
+      "duration_minutes": 35,
+      "distance_km": 2.8,
+      "avg_heart_rate_bpm": 108,
+      "rpe": 3,
+      "source": "Google Health Sync"
+    },
+    {
+      "id": "gh_act_003",
+      "date": "2026-11-07",
+      "type": "Run",
+      "duration_minutes": 25,
+      "distance_km": 3.5,
+      "avg_heart_rate_bpm": 158,
+      "rpe": 7,
+      "source": "Google Health Sync"
+    },
+    {
+      "id": "gh_act_004",
+      "date": "2026-11-04",
+      "type": "Walk",
+      "duration_minutes": 40,
+      "distance_km": 3.2,
+      "avg_heart_rate_bpm": 104,
+      "rpe": 2,
+      "source": "Google Health Sync"
+    },
+    {
+      "id": "gh_act_005",
+      "date": "2026-11-02",
+      "type": "Run",
+      "duration_minutes": 18,
+      "distance_km": 2.5,
+      "avg_heart_rate_bpm": 149,
+      "rpe": 5,
+      "source": "Google Health Sync"
+    },
+    {
+      "id": "gh_act_006",
+      "date": "2026-10-31",
+      "type": "Walk",
+      "duration_minutes": 30,
+      "distance_km": 2.3,
+      "avg_heart_rate_bpm": 102,
+      "rpe": 2,
+      "source": "Google Health Sync"
+    }
+  ]
+}

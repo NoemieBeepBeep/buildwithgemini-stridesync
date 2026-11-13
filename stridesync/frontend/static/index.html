@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StrideSync — Mindful Run Coach</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+  </style>
+</head>
+<body class="bg-slate-100/70 text-slate-800 min-h-screen flex justify-center antialiased select-none sm:select-auto">
+
+  <!-- Mobile App Frame Container (Max 500px, centered) -->
+  <div class="w-full max-w-[500px] bg-white min-h-screen shadow-2xl flex flex-col relative border-x border-slate-200/60 pb-20 overflow-x-hidden">
+
+    <!-- ==================== ONBOARDING FLOW VIEW ==================== -->
+    <div id="onboardingView" class="hidden flex-1 flex flex-col p-6 justify-between bg-gradient-to-b from-rose-50/60 via-white to-rose-50/30">
+      
+      <!-- Top Step Indicator -->
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🌸</span>
+            <span class="font-extrabold text-slate-900 tracking-tight text-base">StrideSync</span>
+          </div>
+          <span id="onboardingStepIndicator" class="text-xs font-bold px-3 py-1 bg-rose-100 text-rose-700 rounded-full">Step 1 of 4</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-6">
+          <div id="progressBar" class="bg-rose-500 h-full rounded-full transition-all duration-300 w-1/4"></div>
+        </div>
+
+        <!-- Step 1: Privacy Notice & Core Consent -->
+        <div id="onboardingStep1" class="space-y-4">
+          <div class="inline-block p-2.5 bg-rose-100/70 text-rose-700 rounded-2xl text-xl mb-1">🛡️</div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Your Privacy Comes First</h2>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            StrideSync is your mindful movement space. To give you compassionate, physiology-friendly guidance, we ask for your explicit consent before saving any personal data.
+          </p>
+
+          <div class="bg-rose-50/70 rounded-2xl p-4 text-xs space-y-2.5 border border-rose-100 text-slate-700">
+            <p class="font-bold text-rose-900 flex items-center gap-1.5">
+              <span>🌸</span> Plain-English Privacy Pledge
+            </p>
+            <ul class="space-y-1.5 text-slate-600 pl-1">
+              <li class="flex items-start gap-1.5">
+                <span class="text-rose-500 font-bold">✓</span>
+                <span><strong>Private Vault:</strong> Resides in your Firestore partition; never shared or sold.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-rose-500 font-bold">✓</span>
+                <span><strong>Zero Silent Extraction:</strong> We never assume or save health context behind your back.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-rose-500 font-bold">✓</span>
+                <span><strong>Sovereign Control:</strong> Granularly wipe symptoms, logs, or your full account anytime.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 2: Running Goals, 1-7 Days Frequency & Baselines -->
+        <div id="onboardingStep2" class="hidden space-y-4">
+          <div class="inline-block p-2.5 bg-rose-100/70 text-rose-700 rounded-2xl text-xl mb-1">🎯</div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Goals & Availability</h2>
+          <p class="text-xs sm:text-sm text-slate-600">
+            Every session counts—from brisk walks to gentle jogs or mobility.
+          </p>
+
+          <div class="space-y-3.5 pt-1">
+            <!-- Primary Goal -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Primary Goal</label>
+              <select id="goalInput" class="w-full border border-slate-200 rounded-2xl p-3 text-xs sm:text-sm font-medium outline-none bg-white">
+                <option value="Mental Wellbeing & Stress Relief">Mental Wellbeing & Stress Relief</option>
+                <option value="Gentle Consistency (Anti-Guilt)">Gentle Consistency (Anti-Guilt)</option>
+                <option value="Mood & Energy Reset">Mood & Energy Reset</option>
+                <option value="Low-Pressure 5K Build">Low-Pressure 5K Build</option>
+              </select>
+            </div>
+
+            <!-- Target Days: 1 to 7 Days -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Target Days Per Week</label>
+                <span id="selectedDaysLabel" class="text-xs font-extrabold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">3 days / week</span>
+              </div>
+              <div class="grid grid-cols-7 gap-1.5">
+                <button type="button" class="days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition" data-days="1">1</button>
+                <button type="button" class="days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition" data-days="2">2</button>
+                <button type="button" class="days-select-btn p-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-extrabold text-xs shadow-sm transition" data-days="3">3</button>
+                <button type="button" class="days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition" data-days="4">4</button>
+                <button type="button" class="days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition" data-days="5">5</button>
+                <button type="button" class="days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition" data-days="6">6</button>
+                <button type="button" class="days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition" data-days="7">7</button>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1 text-center">Gentle walks and rest/mobility preserve your streak.</p>
+            </div>
+
+            <!-- Separate Walking Baseline -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Current Walking Baseline</label>
+              <div class="space-y-1.5" id="walkingBaselineGroup">
+                <button type="button" class="walk-pill w-full p-2.5 rounded-xl border border-slate-200 text-left text-xs font-semibold text-slate-700 hover:border-rose-400 transition" data-val="Low (<4,000 steps/day)">
+                  🚶‍♀️ Low (&lt;4,000 steps/day)
+                </button>
+                <button type="button" class="walk-pill w-full p-2.5 rounded-xl border-2 border-rose-500 bg-rose-50/50 text-left text-xs font-bold text-rose-700 transition" data-val="Moderate (4,000–8,000 steps/day)">
+                  🚶‍♀️ Moderate (4,000–8,000 steps/day)
+                </button>
+                <button type="button" class="walk-pill w-full p-2.5 rounded-xl border border-slate-200 text-left text-xs font-semibold text-slate-700 hover:border-rose-400 transition" data-val="High / Active Walker (8,000–10,000+ steps/day)">
+                  🚶‍♀️ High / Active Walker (8,000–10,000+ steps/day)
+                </button>
+              </div>
+            </div>
+
+            <!-- Separate Running Baseline -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Current Running Baseline</label>
+              <div class="space-y-1.5" id="runningBaselineGroup">
+                <button type="button" class="run-pill w-full p-2.5 rounded-xl border-2 border-rose-500 bg-rose-50/50 text-left text-xs font-bold text-rose-700 transition" data-val="Complete Beginner / Not running yet">
+                  👟 Complete Beginner / Not running yet
+                </button>
+                <button type="button" class="run-pill w-full p-2.5 rounded-xl border border-slate-200 text-left text-xs font-semibold text-slate-700 hover:border-rose-400 transition" data-val="Occasional Jogger (1–3 km)">
+                  👟 Occasional Jogger (1–3 km)
+                </button>
+                <button type="button" class="run-pill w-full p-2.5 rounded-xl border border-slate-200 text-left text-xs font-semibold text-slate-700 hover:border-rose-400 transition" data-val="Regular Runner (5K+)">
+                  👟 Regular Runner (5K+)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Voluntary Health, Gym, Period & City Profile -->
+        <div id="onboardingStep3" class="hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="inline-block p-2.5 bg-rose-100/70 text-rose-700 rounded-2xl text-xl mb-1">🩸</div>
+            <span class="text-[11px] font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full">100% Optional</span>
+          </div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Body & Setup</h2>
+          <p class="text-xs sm:text-sm text-slate-600">
+            Tell us about your environment and rhythm so coach can adapt.
+          </p>
+
+          <div class="space-y-3 pt-1">
+            <!-- Indoor Gym / Treadmill Access -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Indoor Gym / Treadmill Access</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="gymYesBtn" class="gym-btn p-3 rounded-2xl border-2 border-rose-500 bg-rose-50/50 text-rose-700 font-extrabold text-xs text-center transition" data-hasgym="true">
+                  🏋️‍♀️ Yes, Have Access
+                </button>
+                <button type="button" id="gymNoBtn" class="gym-btn p-3 rounded-2xl border border-slate-200 text-slate-600 font-extrabold text-xs text-center transition hover:border-rose-400" data-hasgym="false">
+                  🌳 No, Outdoor Only
+                </button>
+              </div>
+            </div>
+
+            <!-- City for Weather (No GPS) -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">City for Local Weather (No GPS)</label>
+              <input type="text" id="cityInput" value="Hong Kong" placeholder="e.g. Hong Kong, Singapore, London, Tokyo" class="w-full border border-slate-200 rounded-2xl p-3 text-xs sm:text-sm font-medium outline-none bg-white">
+            </div>
+
+            <!-- Voluntary Life Stage -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Life Stage / Cycle Profile</label>
+              <select id="lifeStageInput" class="w-full border border-slate-200 rounded-2xl p-3 text-xs sm:text-sm font-medium outline-none bg-white">
+                <option value="Regular Cycle">Regular Menstrual Cycle</option>
+                <option value="Irregular / PCOS">Irregular Cycle / PCOS</option>
+                <option value="Postpartum">Postpartum</option>
+                <option value="Perimenopause">Perimenopause</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+
+            <!-- Period Date + "Help Me Find Out" Option -->
+            <div class="bg-rose-50/60 p-3 rounded-2xl border border-rose-100 space-y-2">
+              <label class="block text-xs font-bold uppercase tracking-wider text-rose-900">Period Date or Pattern</label>
+              
+              <div class="space-y-2">
+                <button type="button" id="periodFindOutBtn" class="w-full p-2.5 rounded-xl border border-rose-300 bg-white text-rose-700 font-bold text-xs flex items-center justify-between hover:bg-rose-100/60 transition">
+                  <span>✨ "I'm not sure, help me find out"</span>
+                  <span id="periodFindOutCheck" class="hidden text-rose-600 font-extrabold">✓</span>
+                </button>
+
+                <div id="periodDateContainer">
+                  <span class="text-[10px] text-slate-500 block mb-1">Or enter last period start date (if known):</span>
+                  <input type="date" id="periodDateInput" class="w-full border border-slate-200 rounded-xl p-2 text-xs font-medium outline-none bg-white">
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-500 leading-tight">
+                If you're not sure, we will never guess. We'll simply note subtle energy patterns over time without pressure.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Optional Google Health Sync -->
+        <div id="onboardingStep4" class="hidden space-y-4">
+          <div class="inline-block p-2.5 bg-slate-900 text-white rounded-2xl text-xl mb-1">⌚</div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Health Sync</h2>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Connect Google Health to automatically sync 14 days of realistic activity (6 past runs/walks, resting heart rate, and sleep metrics).
+          </p>
+
+          <div class="bg-amber-50/80 rounded-2xl p-4 border border-amber-200/80 text-xs text-amber-900 space-y-2">
+            <p class="font-bold flex items-center gap-1.5">
+              <span>✨</span> Why Sync in Demo?
+            </p>
+            <p class="text-amber-800 leading-relaxed">
+              Populates your weekly momentum calendar instantly and enables the Coach to detect short sleep or elevated heart rate to adjust pacing.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 5 Transition: Plan Kickoff -->
+        <div id="onboardingStep5" class="hidden space-y-5 pt-4 text-center">
+          <div class="inline-flex p-4 bg-rose-100 text-rose-600 rounded-full text-3xl mb-2 shadow-inner">🎉</div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">You're All Set!</h2>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-sm mx-auto">
+            Your mindful profile, baselines, and privacy parameters are active. How would you like to start your week?
+          </p>
+
+          <div class="space-y-3 pt-4">
+            <button id="kickoffDiscussBtn" class="w-full py-4 px-4 rounded-2xl bg-rose-600 text-white font-bold text-xs sm:text-sm hover:bg-rose-700 shadow-md transition flex items-center justify-center gap-2">
+              <span>💬 Discuss This Week's Plan with Coach</span>
+            </button>
+            <button id="kickoffSkipBtn" class="w-full py-3.5 px-4 rounded-2xl border-2 border-slate-200 text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 transition">
+              Skip to Home Page →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Step Navigation Buttons (Steps 1 to 4) -->
+      <div id="onboardingBottomNav" class="pt-6 border-t border-slate-100">
+        <!-- Step 1 Actions -->
+        <div id="step1Actions" class="flex flex-col gap-2.5">
+          <button id="consentAgreeBtn" class="w-full py-3.5 rounded-2xl bg-rose-600 text-white font-bold text-xs sm:text-sm shadow-md hover:bg-rose-700 transition">
+            I Agree & Continue →
+          </button>
+          <button id="consentDeclineBtn" class="w-full py-2.5 text-slate-400 font-semibold text-xs hover:text-slate-600 transition">
+            Decline (Exit)
+          </button>
+        </div>
+
+        <!-- Step 2 Actions -->
+        <div id="step2Actions" class="hidden flex gap-3">
+          <button id="step2BackBtn" class="py-3 px-4 rounded-2xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition">
+            Back
+          </button>
+          <button id="step2NextBtn" class="flex-1 py-3.5 rounded-2xl bg-rose-600 text-white font-bold text-xs sm:text-sm shadow-md hover:bg-rose-700 transition">
+            Next: Body & Setup →
+          </button>
+        </div>
+
+        <!-- Step 3 Actions -->
+        <div id="step3Actions" class="hidden flex gap-3">
+          <button id="step3SkipBtn" class="flex-1 py-3.5 rounded-2xl border border-slate-200 text-slate-600 font-bold text-xs sm:text-sm hover:bg-slate-50 transition">
+            Skip this step
+          </button>
+          <button id="step3SaveBtn" class="flex-1 py-3.5 rounded-2xl bg-rose-600 text-white font-bold text-xs sm:text-sm shadow-md hover:bg-rose-700 transition">
+            Save & Continue
+          </button>
+        </div>
+
+        <!-- Step 4 Actions -->
+        <div id="step4Actions" class="hidden flex flex-col gap-2.5">
+          <button id="healthConnectBtn" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-bold text-xs sm:text-sm shadow-md hover:bg-slate-800 transition flex items-center justify-center gap-2">
+            <span>⚡ Connect & Sync Google Health</span>
+          </button>
+          <button id="healthSkipBtn" class="w-full py-2.5 text-slate-500 font-semibold text-xs hover:text-slate-700 transition">
+            Skip & Enter Manually
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== HOME PAGE DASHBOARD VIEW ==================== -->
+    <div id="homeView" class="hidden flex-1 flex flex-col">
+      
+      <!-- Top Header with Interactive Weather Forecast Button -->
+      <header class="sticky top-0 z-20 glass-nav border-b border-rose-100/80 px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🌸</span>
+          <div>
+            <h1 class="font-extrabold text-sm sm:text-base text-slate-900 tracking-tight leading-none">StrideSync</h1>
+            <p class="text-[10px] text-rose-600 font-semibold mt-0.5">Mindful Run Coach</p>
+          </div>
+        </div>
+
+        <!-- Interactive 7-Day Weather & Vault Actions -->
+        <div class="flex items-center gap-1.5">
+          <!-- 7-Day Weather Forecast Button -->
+          <button id="openWeatherDrawerBtn" class="flex items-center gap-1.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl px-2.5 py-1.5 text-xs font-bold hover:bg-rose-100 transition shadow-sm" title="View 7-Day Weather Forecast">
+            <span id="headerWeatherIcon">⛅</span>
+            <span id="headerWeatherText">Weather</span>
+            <span class="text-[10px] text-rose-500">▼</span>
+          </button>
+
+          <button id="openVaultBtn" class="p-2 rounded-xl text-rose-700 bg-rose-100/80 hover:bg-rose-200 transition" title="Privacy & Data Vault">
+            <span class="text-sm">🛡️</span>
+          </button>
+          <button id="resetDemoBtn" class="text-[10px] font-bold px-1.5 py-1 text-slate-400 hover:text-rose-600 transition" title="Reset Demo">
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Blocks Container -->
+      <div class="p-4 space-y-4 flex-1">
+
+        <!-- ================= BLOCK 1: FULL 7-DAY CALENDAR PLAN ================= -->
+        <section id="block-plan" class="bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 rounded-3xl p-5 text-white shadow-lg space-y-4 scroll-mt-20">
+          <div class="flex items-center justify-between">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-[11px] font-bold">
+              <span>🗓️ This Week's Plan</span>
+            </div>
+            <span id="planWeeklyTargetTag" class="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full">3x / week</span>
+          </div>
+
+          <div class="flex items-baseline justify-between">
+            <div>
+              <div class="text-2xl font-extrabold tracking-tight" id="planProgressText">1 of 3 Completed</div>
+              <p class="text-[11px] text-rose-100 mt-0.5">Rest days & walks count 100% toward Compassionate Consistency.</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-extrabold px-2 py-1 rounded-lg bg-emerald-400/20 text-emerald-200 border border-emerald-400/30">On Track ✨</span>
+            </div>
+          </div>
+
+          <!-- Full 7-Day Calendar Grid (Day Name + Exact Date) -->
+          <div class="space-y-1.5">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-rose-200 flex justify-between">
+              <span>7-Day Schedule (Today: Nov 13)</span>
+              <span>All 7 Days Mapped</span>
+            </div>
+            <div id="full7DayCalendar" class="grid grid-cols-7 gap-1.5 pt-1">
+              <!-- Populated via script: Exact day name + date + intentional rest/run label -->
+            </div>
+          </div>
+
+          <!-- Coach Action Inside Block 1 -->
+          <div class="pt-2 border-t border-white/20 flex items-center justify-between">
+            <span class="text-[11px] text-rose-100 font-medium">Need to shift days or feeling tired?</span>
+            <button id="planAskCoachBtn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl bg-white text-rose-700 hover:bg-rose-50 shadow-sm transition flex items-center gap-1">
+              <span>💬 Ask Coach / Adjust</span>
+            </button>
+          </div>
+        </section>
+
+
+        <!-- ================= BLOCK 2: TODAY'S MINDFUL CHECK-IN & TIPS ================= -->
+        <section id="block-checkin" class="bg-white border border-rose-100 rounded-3xl p-5 shadow-sm space-y-4 scroll-mt-20">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="font-bold text-slate-900 text-sm sm:text-base">Today's Mindful Check-In</h2>
+              <p class="text-[11px] text-slate-500">Tap your daily reality — tips adapt instantly</p>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-100">1-Tap Excuse Translator</span>
+          </div>
+
+          <!-- 1-Tap Chips + "Tell Coach how I'm feeling..." Option -->
+          <div class="grid grid-cols-2 gap-2">
+            <button class="excuse-chip p-3 rounded-2xl border border-rose-200/80 bg-rose-50/40 hover:bg-rose-100 text-left transition" data-feeling="Cramps / Heavy">
+              <div class="text-lg mb-0.5">🩸</div>
+              <div class="text-xs font-extrabold text-slate-800">Cramps / Heavy</div>
+              <div class="text-[10px] text-slate-500">Ease pelvic pressure</div>
+            </button>
+            <button class="excuse-chip p-3 rounded-2xl border border-rose-200/80 bg-rose-50/40 hover:bg-rose-100 text-left transition" data-feeling="PMS / Low Mood">
+              <div class="text-lg mb-0.5">🌧️</div>
+              <div class="text-xs font-extrabold text-slate-800">PMS / Low Mood</div>
+              <div class="text-[10px] text-slate-500">Dopamine reset</div>
+            </button>
+            <button class="excuse-chip p-3 rounded-2xl border border-rose-200/80 bg-rose-50/40 hover:bg-rose-100 text-left transition" data-feeling="Zero Sleep / Overwhelmed">
+              <div class="text-lg mb-0.5">🥱</div>
+              <div class="text-xs font-extrabold text-slate-800">Zero Sleep</div>
+              <div class="text-[10px] text-slate-500">Low cortisol pace</div>
+            </button>
+            <button class="excuse-chip p-3 rounded-2xl border border-rose-200/80 bg-rose-50/40 hover:bg-rose-100 text-left transition" data-feeling="Feeling Good">
+              <div class="text-lg mb-0.5">✨</div>
+              <div class="text-xs font-extrabold text-slate-800">Feeling Good</div>
+              <div class="text-[10px] text-slate-500">Natural energy flow</div>
+            </button>
+          </div>
+
+          <!-- Distinct "Tell Coach how I'm feeling..." Action Button -->
+          <button id="explainFeelingChatBtn" class="w-full py-3 px-3.5 rounded-2xl border-2 border-dashed border-rose-300 bg-rose-50/50 hover:bg-rose-100/70 text-rose-800 text-xs font-bold flex items-center justify-between transition group">
+            <div class="flex items-center gap-2">
+              <span class="text-base group-hover:scale-110 transition-transform">💭</span>
+              <span>Explain How I'm Feeling (Chat with Coach)</span>
+            </div>
+            <span class="text-rose-500 font-extrabold">Share →</span>
+          </button>
+
+          <!-- Psychologist & Scientist Tailored Tips -->
+          <div class="bg-rose-50/50 rounded-2xl p-4 border border-rose-100/90 space-y-3">
+            <div class="flex items-center justify-between border-b border-rose-100 pb-2">
+              <span id="activeCheckinBadge" class="text-[11px] font-bold text-rose-800">Today's State: Checked In Normal</span>
+              <span class="text-[10px] text-slate-400">Scientist & Psychologist</span>
+            </div>
+
+            <!-- Scientist's Thermoregulation & Physiology Tip -->
+            <div class="flex items-start gap-2.5">
+              <span class="text-base">🌡️</span>
+              <div class="text-xs">
+                <span class="font-bold text-slate-900 block" id="scientistHeader">Scientist: Baselines & Thermoregulation</span>
+                <p id="scientistTip" class="text-slate-600 mt-0.5 leading-relaxed">
+                  Luteal phase progesterone elevates core temperature by ~0.4°C. In humid conditions, sweat evaporation is hindered—sip electrolyte water before stepping out.
+                </p>
+              </div>
+            </div>
+
+            <!-- Psychologist's Mental Health Cue -->
+            <div class="flex items-start gap-2.5 pt-1">
+              <span class="text-base">🧠</span>
+              <div class="text-xs">
+                <span class="font-bold text-slate-900 block">Psychologist's Mental Cue</span>
+                <p id="psychologistCue" class="text-slate-600 mt-0.5 leading-relaxed">
+                  The 10-Minute Permission Slip: You only commit to 10 minutes. If you want to stop then, you have 100% permission. Taking the pressure off quiets resistance.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================= BLOCK 3: TODAY'S MOVEMENT (WEATHER INTEGRATED) ================= -->
+        <section id="block-movement" class="bg-white border border-rose-100 rounded-3xl p-5 shadow-sm space-y-4 scroll-mt-20">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="font-bold text-slate-900 text-sm sm:text-base">Today's Movement</h2>
+              <p class="text-[11px] text-slate-500">Adapted for baselines, weather & check-in</p>
+            </div>
+            <span id="movementTypeTag" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Scheduled Run Day</span>
+          </div>
+
+          <!-- Dynamic Weather Condition Badge inside Block 3 (Clickable to open 7-day forecast) -->
+          <div id="weatherPill" class="cursor-pointer hover:bg-slate-200/80 transition flex items-center justify-between bg-slate-100/90 rounded-2xl px-3.5 py-2.5 border border-slate-200 text-xs">
+            <div class="flex items-center gap-2">
+              <span id="weatherIcon" class="text-base">⛅</span>
+              <div>
+                <span id="weatherText" class="font-bold text-slate-800 block leading-tight">29°C · 82% Humidity</span>
+                <span id="weatherLocation" class="text-[10px] text-slate-500">Hong Kong (Tap for 7-day forecast ➔)</span>
+              </div>
+            </div>
+            <span id="indoorOutdoorBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Outdoor</span>
+          </div>
+
+          <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/70 space-y-3">
+            <div class="flex items-center justify-between">
+              <span id="movementName" class="text-sm font-bold text-slate-900">Conversational Run / Walk (24 mins)</span>
+              <span id="rpeTag" class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Target RPE: 3-4/10</span>
+            </div>
+
+            <div id="movementSteps" class="text-xs text-slate-600 space-y-1.5 leading-relaxed pl-1">
+              <p>• <strong>Warm-up (3m):</strong> Easy shoulder rolls & ankle circles.</p>
+              <p>• <strong>Main Set (18m):</strong> 2m easy jog / 2m walk intervals at effortless conversation pace.</p>
+              <p>• <strong>Cool-down (3m):</strong> Slow walk and 5 deep belly breaths.</p>
+            </div>
+
+            <!-- 1-Tap Make it gentler toggle -->
+            <div class="pt-2 border-t border-slate-200/80 flex items-center justify-between">
+              <span class="text-[11px] text-slate-500">Feeling exhausted or sore?</span>
+              <button id="gentlerBailoutBtn" class="text-xs font-extrabold text-rose-600 hover:text-rose-700 flex items-center gap-1 transition">
+                <span>🍃 1-Tap "Make it gentler"</span>
+              </button>
+            </div>
+          </div>
+
+          <button id="logCompleteBtn" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 shadow-sm transition flex items-center justify-center gap-2">
+            <span>✓ Log Complete for Today</span>
+          </button>
+        </section>
+
+
+        <!-- ================= BLOCK 4: ACTIVITY HISTORY ================= -->
+        <section id="block-history" class="bg-white border border-rose-100 rounded-3xl p-5 shadow-sm space-y-4 scroll-mt-20">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="font-bold text-slate-900 text-sm sm:text-base">Activity History</h2>
+              <p class="text-[11px] text-slate-500">Synced from Google Health & manual entries</p>
+            </div>
+            <button id="openManualLogBtn" class="text-xs font-bold px-3 py-1.5 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 transition">
+              + Log Workout
+            </button>
+          </div>
+
+          <div id="activityHistoryList" class="divide-y divide-slate-100">
+            <div class="py-4 text-center text-xs text-slate-400">Loading your history...</div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+
+    <!-- ==================== STICKY BOTTOM NAVIGATION BAR ==================== -->
+    <nav id="bottomNav" class="hidden fixed bottom-0 max-w-[500px] w-full glass-nav border-t border-rose-100/80 px-2 py-2 flex justify-around items-center z-30">
+      <button class="nav-btn flex flex-col items-center p-1.5 text-rose-600" data-target="block-plan">
+        <span class="text-lg">🗓️</span>
+        <span class="text-[10px] font-bold mt-0.5">Week Plan</span>
+      </button>
+      <button class="nav-btn flex flex-col items-center p-1.5 text-slate-400 hover:text-rose-600" data-target="block-checkin">
+        <span class="text-lg">✨</span>
+        <span class="text-[10px] font-bold mt-0.5">Check-In</span>
+      </button>
+      <button class="nav-btn flex flex-col items-center p-1.5 text-slate-400 hover:text-rose-600" data-target="block-movement">
+        <span class="text-lg">👟</span>
+        <span class="text-[10px] font-bold mt-0.5">Today's Run</span>
+      </button>
+      <button class="nav-btn flex flex-col items-center p-1.5 text-slate-400 hover:text-rose-600" data-target="block-history">
+        <span class="text-lg">📋</span>
+        <span class="text-[10px] font-bold mt-0.5">History</span>
+      </button>
+      <button id="navOpenChatBtn" class="flex flex-col items-center p-1.5 text-slate-400 hover:text-rose-600">
+        <span class="text-lg">💬</span>
+        <span class="text-[10px] font-bold mt-0.5">Ask Coach</span>
+      </button>
+    </nav>
+
+
+    <!-- ==================== 7-DAY WEATHER FORECAST DRAWER / MODAL ==================== -->
+    <div id="weatherDrawer" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-rose-100 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">⛅</span>
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-sm sm:text-base">7-Day Weather & Training Forecast</h4>
+              <p class="text-[10px] text-slate-500" id="forecastCitySub">Hong Kong · Live Open-Meteo Feed</p>
+            </div>
+          </div>
+          <button id="closeWeatherDrawerBtn" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        </div>
+
+        <!-- Demo Weather Switcher inside Weather Drawer -->
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-700">Presentation Weather Override:</span>
+            <select id="drawerWeatherOverride" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 outline-none">
+              <option value="live">Live Weather</option>
+              <option value="33c_humid">33°C Humid (Heat Pivot)</option>
+              <option value="heavy_rain">Heavy Rain (Rain Pivot)</option>
+            </select>
+          </div>
+          <p class="text-[10px] text-slate-400">Switch conditions live to demonstrate automated indoor treadmill pivots.</p>
+        </div>
+
+        <!-- 7-Day Forecast Items -->
+        <div id="forecastItemsContainer" class="divide-y divide-slate-100 text-xs">
+          <!-- Populated via script -->
+        </div>
+
+        <button id="closeWeatherDrawerBottomBtn" class="w-full py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-200 transition">
+          Close Forecast
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ==================== SLIDE-OVER "ASK COACH" CHAT DRAWER ==================== -->
+    <div id="chatDrawer" class="fixed inset-y-0 max-w-[500px] w-full right-0 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-rose-100">
+      <div class="p-4 border-b border-rose-100 flex items-center justify-between bg-rose-50/70">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🌸</span>
+          <div>
+            <h4 class="font-extrabold text-sm text-slate-900">StrideSync Coach</h4>
+            <span class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online & Listening
+            </span>
+          </div>
+        </div>
+        <button id="closeChatBtn" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1">✕</button>
+      </div>
+
+      <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs leading-relaxed">
+        <div class="bg-rose-50 text-slate-800 p-3.5 rounded-2xl rounded-tl-none border border-rose-100">
+          Hi! I'm your StrideSync coach. I'm here to co-create your weekly movement plan, adapt to heat/rain or cramps, or talk through mental resistance. What's on your mind?
+        </div>
+      </div>
+
+      <div class="p-3 border-t border-slate-100 bg-white">
+        <form id="chatForm" class="flex gap-2">
+          <input type="text" id="chatInput" placeholder="Ask your coach anything..." class="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:ring-2 focus:ring-rose-500 outline-none">
+          <button type="submit" class="px-4 py-2.5 bg-rose-600 text-white font-bold rounded-xl text-xs hover:bg-rose-700 transition">Send</button>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- ==================== PRIVACY & DATA VAULT MODAL ==================== -->
+    <div id="vaultModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-rose-100 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🛡️</span>
+            <h4 class="font-extrabold text-slate-900 text-base">Privacy & Data Vault</h4>
+          </div>
+          <button id="closeVaultBtn" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        <div class="text-xs text-slate-600 space-y-3">
+          <p>You have complete ownership over your data. All records reside strictly in your Firestore partition.</p>
+          
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
+            <span class="font-bold text-slate-800 block">External Connections</span>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px]">Google Health Sync</span>
+              <button id="disconnectHealthBtn" class="px-2.5 py-1 rounded-lg border border-rose-300 text-rose-700 text-[10px] font-bold hover:bg-rose-50">Disconnect</button>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-1">
+            <span class="font-bold text-slate-800 block">Granular Data Deletion</span>
+            <button id="wipeSymptomsBtn" class="w-full text-left p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 flex justify-between items-center transition">
+              <span>Wipe Check-in & Symptoms</span>
+              <span class="text-rose-600 font-bold">Delete</span>
+            </button>
+            <button id="wipeWorkoutsBtn" class="w-full text-left p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 flex justify-between items-center transition">
+              <span>Wipe All Workout History</span>
+              <span class="text-rose-600 font-bold">Delete</span>
+            </button>
+            <button id="wipeAllBtn" class="w-full text-left p-2.5 rounded-xl border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 flex justify-between items-center transition font-bold">
+              <span>Purge Everything (Reset)</span>
+              <span>Wipe All</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== MANUAL WORKOUT MODAL ==================== -->
+    <div id="manualWorkoutModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-rose-100 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h4 class="font-extrabold text-slate-900 text-base">+ Log Gentle Movement</h4>
+          <button id="closeManualBtn" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+        <form id="manualWorkoutForm" class="space-y-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Activity Type</label>
+            <select id="manType" class="w-full border border-slate-200 rounded-xl p-2.5 outline-none bg-white">
+              <option value="Run">Run (Outdoor)</option>
+              <option value="Treadmill Run">Treadmill Run</option>
+              <option value="Walk">Walk</option>
+              <option value="Run/Walk Intervals">Run/Walk Intervals</option>
+              <option value="Restorative Movement">Restorative Movement</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Duration (mins)</label>
+              <input type="number" id="manDuration" value="20" class="w-full border border-slate-200 rounded-xl p-2.5 outline-none">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Distance (km)</label>
+              <input type="number" step="0.1" id="manDistance" value="2.5" class="w-full border border-slate-200 rounded-xl p-2.5 outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Effort RPE (1-10)</label>
+            <input type="range" id="manRpe" min="1" max="10" value="4" class="w-full accent-rose-600">
+            <div class="flex justify-between text-[10px] text-slate-400">
+              <span>1 (Restorative)</span>
+              <span>5 (Moderate)</span>
+              <span>10 (Max)</span>
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 transition">Save Movement</button>
+        </form>
+      </div>
+    </div>
+
+  </div> <!-- End Mobile App Frame -->
+
+
+  <!-- Scripts & Interaction Logic -->
+  <script>
+    const USER_ID = 'default_user';
+    let selectedWeeklyDays = 3;
+    let selectedWalkingBaseline = "Moderate (4,000–8,000 steps/day)";
+    let selectedRunningBaseline = "Complete Beginner / Not running yet";
+    let periodDiscoveryMode = false;
+    let hasIndoorGym = true;
+
+    let cachedDashboardData = null;
+    let currentDemoWeather = 'live';
+    let currentFeeling = 'Normal';
+
+    // View References
+    const onboardingView = document.getElementById('onboardingView');
+    const homeView = document.getElementById('homeView');
+    const bottomNav = document.getElementById('bottomNav');
+
+    // Onboarding Steps
+    const step1 = document.getElementById('onboardingStep1');
+    const step2 = document.getElementById('onboardingStep2');
+    const step3 = document.getElementById('onboardingStep3');
+    const step4 = document.getElementById('onboardingStep4');
+    const step5 = document.getElementById('onboardingStep5');
+
+    const step1Actions = document.getElementById('step1Actions');
+    const step2Actions = document.getElementById('step2Actions');
+    const step3Actions = document.getElementById('step3Actions');
+    const step4Actions = document.getElementById('step4Actions');
+    const onboardingBottomNav = document.getElementById('onboardingBottomNav');
+
+    const stepIndicator = document.getElementById('onboardingStepIndicator');
+    const progressBar = document.getElementById('progressBar');
+
+    // Chat Drawer
+    const chatDrawer = document.getElementById('chatDrawer');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const navOpenChatBtn = document.getElementById('navOpenChatBtn');
+    const planAskCoachBtn = document.getElementById('planAskCoachBtn');
+    const explainFeelingChatBtn = document.getElementById('explainFeelingChatBtn');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+
+    // Weather Forecast Drawer
+    const weatherDrawer = document.getElementById('weatherDrawer');
+    const openWeatherDrawerBtn = document.getElementById('openWeatherDrawerBtn');
+    const closeWeatherDrawerBtn = document.getElementById('closeWeatherDrawerBtn');
+    const closeWeatherDrawerBottomBtn = document.getElementById('closeWeatherDrawerBottomBtn');
+    const drawerWeatherOverride = document.getElementById('drawerWeatherOverride');
+    const weatherPill = document.getElementById('weatherPill');
+
+    // Modals & Selectors
+    const vaultModal = document.getElementById('vaultModal');
+    const openVaultBtn = document.getElementById('openVaultBtn');
+    const closeVaultBtn = document.getElementById('closeVaultBtn');
+    const manualWorkoutModal = document.getElementById('manualWorkoutModal');
+    const openManualLogBtn = document.getElementById('openManualLogBtn');
+    const closeManualBtn = document.getElementById('closeManualBtn');
+    const resetDemoBtn = document.getElementById('resetDemoBtn');
+
+    // Open/Close Chat
+    function openChat(initialMsg = null) {
+      chatDrawer.classList.remove('translate-x-full');
+      if (initialMsg) {
+        chatInput.value = initialMsg;
+      }
+    }
+    function closeChat() {
+      chatDrawer.classList.add('translate-x-full');
+    }
+    navOpenChatBtn.onclick = () => openChat();
+    planAskCoachBtn.onclick = () => openChat("Can we adjust my 7-day plan? Here's my schedule:");
+    closeChatBtn.onclick = closeChat;
+
+    // "Tell Coach how I'm feeling..." in Block 2
+    explainFeelingChatBtn.onclick = () => {
+      openChat("How are your body and mind feeling today? Share as much or as little as you'd like.");
+    };
+
+    // Open/Close Weather Forecast Drawer
+    openWeatherDrawerBtn.onclick = () => weatherDrawer.classList.remove('hidden');
+    weatherPill.onclick = () => weatherDrawer.classList.remove('hidden');
+    closeWeatherDrawerBtn.onclick = () => weatherDrawer.classList.add('hidden');
+    closeWeatherDrawerBottomBtn.onclick = () => weatherDrawer.classList.add('hidden');
+
+    // Weather Override Select inside Drawer
+    drawerWeatherOverride.onchange = async () => {
+      currentDemoWeather = drawerWeatherOverride.value;
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      const data = await res.json();
+      renderDashboard(data);
+    };
+
+    openVaultBtn.onclick = () => vaultModal.classList.remove('hidden');
+    closeVaultBtn.onclick = () => vaultModal.classList.add('hidden');
+    openManualLogBtn.onclick = () => manualWorkoutModal.classList.remove('hidden');
+    closeManualBtn.onclick = () => manualWorkoutModal.classList.add('hidden');
+
+    // Smooth Scroll Navigation for Bottom Nav Bar
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.onclick = () => {
+        const targetId = btn.dataset.target;
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        document.querySelectorAll('.nav-btn').forEach(b => {
+          b.classList.remove('text-rose-600');
+          b.classList.add('text-slate-400');
+        });
+        btn.classList.remove('text-slate-400');
+        btn.classList.add('text-rose-600');
+      };
+    });
+
+    // Reset Demo action
+    resetDemoBtn.onclick = async () => {
+      if (confirm('Reset demo state to Step 1 onboarding?')) {
+        await fetch('/api/delete-data', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({user_id: USER_ID, mode: 'all'})
+        });
+        location.reload();
+      }
+    };
+
+    // 1 to 7 Days Frequency Selector Buttons (Step 2)
+    document.querySelectorAll('.days-select-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.days-select-btn').forEach(b => {
+          b.className = 'days-select-btn p-2 rounded-xl border border-slate-200 font-extrabold text-xs transition';
+        });
+        btn.className = 'days-select-btn p-2 rounded-xl border-2 border-rose-500 bg-rose-500 text-white font-extrabold text-xs shadow-sm transition';
+        selectedWeeklyDays = parseInt(btn.dataset.days);
+        document.getElementById('selectedDaysLabel').innerText = `${selectedWeeklyDays} days / week`;
+      };
+    });
+
+    // Walking Baseline Selector Pills (Step 2)
+    document.querySelectorAll('.walk-pill').forEach(pill => {
+      pill.onclick = () => {
+        document.querySelectorAll('.walk-pill').forEach(p => {
+          p.className = 'walk-pill w-full p-2.5 rounded-xl border border-slate-200 text-left text-xs font-semibold text-slate-700 hover:border-rose-400 transition';
+        });
+        pill.className = 'walk-pill w-full p-2.5 rounded-xl border-2 border-rose-500 bg-rose-50/50 text-left text-xs font-bold text-rose-700 transition';
+        selectedWalkingBaseline = pill.dataset.val;
+      };
+    });
+
+    // Running Baseline Selector Pills (Step 2)
+    document.querySelectorAll('.run-pill').forEach(pill => {
+      pill.onclick = () => {
+        document.querySelectorAll('.run-pill').forEach(p => {
+          p.className = 'run-pill w-full p-2.5 rounded-xl border border-slate-200 text-left text-xs font-semibold text-slate-700 hover:border-rose-400 transition';
+        });
+        pill.className = 'run-pill w-full p-2.5 rounded-xl border-2 border-rose-500 bg-rose-50/50 text-left text-xs font-bold text-rose-700 transition';
+        selectedRunningBaseline = pill.dataset.val;
+      };
+    });
+
+    // Indoor Gym Access selector buttons in Step 3
+    const gymYesBtn = document.getElementById('gymYesBtn');
+    const gymNoBtn = document.getElementById('gymNoBtn');
+    gymYesBtn.onclick = () => {
+      hasIndoorGym = true;
+      gymYesBtn.className = 'gym-btn p-3 rounded-2xl border-2 border-rose-500 bg-rose-50/50 text-rose-700 font-extrabold text-xs text-center transition';
+      gymNoBtn.className = 'gym-btn p-3 rounded-2xl border border-slate-200 text-slate-600 font-extrabold text-xs text-center transition hover:border-rose-400';
+    };
+    gymNoBtn.onclick = () => {
+      hasIndoorGym = false;
+      gymNoBtn.className = 'gym-btn p-3 rounded-2xl border-2 border-rose-500 bg-rose-50/50 text-rose-700 font-extrabold text-xs text-center transition';
+      gymYesBtn.className = 'gym-btn p-3 rounded-2xl border border-slate-200 text-slate-600 font-extrabold text-xs text-center transition hover:border-rose-400';
+    };
+
+    // Period "Help Me Find Out" Button in Step 3
+    const periodFindOutBtn = document.getElementById('periodFindOutBtn');
+    const periodFindOutCheck = document.getElementById('periodFindOutCheck');
+    const periodDateContainer = document.getElementById('periodDateContainer');
+    const periodDateInput = document.getElementById('periodDateInput');
+
+    periodFindOutBtn.onclick = () => {
+      periodDiscoveryMode = !periodDiscoveryMode;
+      if (periodDiscoveryMode) {
+        periodFindOutBtn.className = 'w-full p-2.5 rounded-xl border-2 border-rose-500 bg-rose-100/70 text-rose-900 font-extrabold text-xs flex items-center justify-between transition';
+        periodFindOutCheck.classList.remove('hidden');
+        periodDateInput.value = '';
+        periodDateContainer.classList.add('opacity-40');
+      } else {
+        periodFindOutBtn.className = 'w-full p-2.5 rounded-xl border border-rose-300 bg-white text-rose-700 font-bold text-xs flex items-center justify-between hover:bg-rose-100/60 transition';
+        periodFindOutCheck.classList.add('hidden');
+        periodDateContainer.classList.remove('opacity-40');
+      }
+    };
+
+    // Check App State on Load
+    async function initApp() {
+      try {
+        const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+        const data = await res.json();
+        cachedDashboardData = data;
+
+        if (!data.consent_granted) {
+          showOnboardingStep(1);
+        } else if (!data.onboarding_completed) {
+          showOnboardingStep(2);
+        } else {
+          showHomeScreen(data);
+        }
+      } catch (e) {
+        console.error(e);
+        showOnboardingStep(1);
+      }
+    }
+
+    // Strict Screen Separation Logic
+    function showOnboardingStep(stepNum) {
+      homeView.classList.add('hidden');
+      bottomNav.classList.add('hidden');
+      onboardingView.classList.remove('hidden');
+
+      step1.classList.add('hidden');
+      step2.classList.add('hidden');
+      step3.classList.add('hidden');
+      step4.classList.add('hidden');
+      step5.classList.add('hidden');
+
+      step1Actions.classList.add('hidden');
+      step2Actions.classList.add('hidden');
+      step3Actions.classList.add('hidden');
+      step4Actions.classList.add('hidden');
+      onboardingBottomNav.classList.remove('hidden');
+
+      if (stepNum === 1) {
+        step1.classList.remove('hidden');
+        step1Actions.classList.remove('hidden');
+        stepIndicator.innerText = 'Step 1 of 4';
+        progressBar.style.width = '25%';
+      } else if (stepNum === 2) {
+        step2.classList.remove('hidden');
+        step2Actions.classList.remove('hidden');
+        stepIndicator.innerText = 'Step 2 of 4';
+        progressBar.style.width = '50%';
+      } else if (stepNum === 3) {
+        step3.classList.remove('hidden');
+        step3Actions.classList.remove('hidden');
+        stepIndicator.innerText = 'Step 3 of 4';
+        progressBar.style.width = '75%';
+      } else if (stepNum === 4) {
+        step4.classList.remove('hidden');
+        step4Actions.classList.remove('hidden');
+        stepIndicator.innerText = 'Step 4 of 4';
+        progressBar.style.width = '100%';
+      } else if (stepNum === 5) {
+        step5.classList.remove('hidden');
+        onboardingBottomNav.classList.add('hidden');
+        stepIndicator.innerText = 'Kickoff';
+        progressBar.style.width = '100%';
+      }
+    }
+
+    function showHomeScreen(data) {
+      onboardingView.classList.add('hidden');
+      homeView.classList.remove('hidden');
+      bottomNav.classList.remove('hidden');
+      renderDashboard(data);
+    }
+
+    // Onboarding Button Handlers
+    document.getElementById('consentAgreeBtn').onclick = async () => {
+      await fetch('/api/consent', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, consent: true})
+      });
+      showOnboardingStep(2);
+    };
+
+    document.getElementById('consentDeclineBtn').onclick = async () => {
+      await fetch('/api/consent', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, consent: false})
+      });
+      alert('You have declined consent. Personalization is paused.');
+    };
+
+    document.getElementById('step2BackBtn').onclick = () => showOnboardingStep(1);
+    document.getElementById('step2NextBtn').onclick = () => showOnboardingStep(3);
+
+    // Step 3: Voluntary Health, Gym & City
+    async function submitStep3(skip = false) {
+      const goal = document.getElementById('goalInput').value;
+      const city = document.getElementById('cityInput').value.trim() || 'Hong Kong';
+      const lifeStage = skip ? null : document.getElementById('lifeStageInput').value;
+      const periodDate = skip || periodDiscoveryMode ? null : document.getElementById('periodDateInput').value;
+
+      await fetch('/api/profile', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          user_id: USER_ID,
+          running_goal: goal,
+          weekly_days: selectedWeeklyDays,
+          walking_baseline: selectedWalkingBaseline,
+          running_baseline: selectedRunningBaseline,
+          health_notes: null,
+          life_stage: lifeStage,
+          last_period_date: periodDate,
+          period_discovery_mode: periodDiscoveryMode,
+          has_indoor_gym: hasIndoorGym,
+          city_name: city
+        })
+      });
+      showOnboardingStep(4);
+    }
+
+    document.getElementById('step3SaveBtn').onclick = () => submitStep3(false);
+    document.getElementById('step3SkipBtn').onclick = () => submitStep3(true);
+
+    // Step 4: Health Sync -> Step 5 Transition
+    document.getElementById('healthConnectBtn').onclick = async () => {
+      await fetch('/api/sync-health', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, connect: true})
+      });
+      showOnboardingStep(5);
+    };
+
+    document.getElementById('healthSkipBtn').onclick = async () => {
+      await fetch('/api/sync-health', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, connect: false})
+      });
+      showOnboardingStep(5);
+    };
+
+    // Step 5 Transition Buttons
+    document.getElementById('kickoffDiscussBtn').onclick = async () => {
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      const data = await res.json();
+      showHomeScreen(data);
+      openChat("Hi Coach! I just finished onboarding and want to co-create my 7-day movement plan with you.");
+    };
+
+    document.getElementById('kickoffSkipBtn').onclick = async () => {
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      const data = await res.json();
+      showHomeScreen(data);
+    };
+
+    // ================= RENDER HOME PAGE =================
+    function renderDashboard(data) {
+      cachedDashboardData = data;
+      const profile = data.profile || {};
+      const weeklyTarget = profile.weekly_days || selectedWeeklyDays || 3;
+      const activities = data.activities || [];
+      const weather = data.weather || {
+        city: 'Hong Kong',
+        temperature_c: 28.5,
+        relative_humidity: 80,
+        condition: 'Warm & Humid',
+        is_extreme_heat: false,
+        is_rain: false
+      };
+      const dailyForecast = data.daily_forecast || [];
+      hasIndoorGym = profile.has_indoor_gym !== undefined ? profile.has_indoor_gym : true;
+
+      // Header Weather Text & Icon
+      document.getElementById('headerWeatherIcon').innerText = weather.is_rain ? '🌧️' : (weather.is_extreme_heat ? '🔥' : '⛅');
+      document.getElementById('headerWeatherText').innerText = `${weather.temperature_c}°C`;
+      document.getElementById('forecastCitySub').innerText = `${weather.city} · 7-Day Forecast`;
+
+      // Block 1: This Week's Plan
+      document.getElementById('planWeeklyTargetTag').innerText = `${weeklyTarget} days / week`;
+      const completedCount = activities.length > 0 ? Math.min(weeklyTarget, Math.max(1, activities.filter(a => a.date >= '2026-11-07').length)) : 1;
+      document.getElementById('planProgressText').innerText = `${completedCount} of ${weeklyTarget} Completed`;
+
+      // Render FULL 7-Day Calendar (Exact Day Name + Date)
+      renderFull7DayCalendar(weeklyTarget, dailyForecast);
+
+      // Render 7-Day Weather Forecast Items in Drawer
+      renderForecastDrawer(dailyForecast);
+
+      // Render Weather Pill in Block 3
+      renderWeatherBadge(weather);
+
+      // Adapt Tips & Movement based on Baselines + Check-in + Weather + Gym
+      adaptTipsAndMovement(currentFeeling, weather, profile);
+
+      // Block 4: Activity History
+      renderHistoryList(activities);
+    }
+
+    // Render Full 7-Day Calendar View (Day Name + Date)
+    function renderFull7DayCalendar(weeklyTarget, dailyForecast) {
+      const container = document.getElementById('full7DayCalendar');
+      const today = new Date(2026, 10, 13); // Local demo date: Fri, Nov 13, 2026
+      const dayNames = ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+
+      // Assign which days of the 7 are active movement vs intentional rest based on weeklyTarget
+      // e.g. target 3x -> Fri (Run), Sun (Run), Wed (Run), others rest
+      const activeIndices = [];
+      if (weeklyTarget === 1) activeIndices.push(0);
+      else if (weeklyTarget === 2) activeIndices.push(0, 3);
+      else if (weeklyTarget === 3) activeIndices.push(0, 2, 5);
+      else if (weeklyTarget === 4) activeIndices.push(0, 2, 4, 6);
+      else if (weeklyTarget === 5) activeIndices.push(0, 1, 3, 4, 6);
+      else if (weeklyTarget === 6) activeIndices.push(0, 1, 2, 3, 4, 5);
+      else activeIndices.push(0, 1, 2, 3, 4, 5, 6);
+
+      container.innerHTML = dayNames.map((dName, idx) => {
+        const calDate = 13 + idx;
+        const isToday = idx === 0;
+        const isActiveWorkout = activeIndices.includes(idx);
+        const forecastDay = dailyForecast[idx] || {};
+
+        if (isToday) {
+          return `
+            <div class="flex flex-col items-center bg-white text-rose-700 rounded-2xl py-2 px-1 shadow-md border-2 border-white">
+              <span class="text-[9px] font-extrabold uppercase">${dName}</span>
+              <span class="text-xs font-black mt-0.5">${calDate}</span>
+              <span class="text-[9px] font-extrabold mt-1 px-1 py-0.5 bg-rose-100 text-rose-800 rounded">Today</span>
+              <span class="text-[8px] font-bold text-slate-500 mt-0.5 text-center leading-tight">Run/Walk</span>
+            </div>
+          `;
+        } else if (isActiveWorkout) {
+          return `
+            <div class="flex flex-col items-center bg-white/20 text-white rounded-2xl py-2 px-1 border border-white/30">
+              <span class="text-[9px] font-bold uppercase opacity-80">${dName}</span>
+              <span class="text-xs font-extrabold mt-0.5">${calDate}</span>
+              <span class="text-[10px] mt-1">${forecastDay.is_indoor_recommended && hasIndoorGym ? '🏋️' : '🏃'}</span>
+              <span class="text-[8px] font-semibold text-rose-100 mt-0.5 text-center leading-tight">${forecastDay.is_indoor_recommended && hasIndoorGym ? 'Treadmill' : 'Session'}</span>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="flex flex-col items-center bg-black/15 text-rose-100 rounded-2xl py-2 px-1 border border-white/10">
+              <span class="text-[9px] font-medium uppercase opacity-70">${dName}</span>
+              <span class="text-xs font-bold mt-0.5">${calDate}</span>
+              <span class="text-[10px] mt-1">🧘</span>
+              <span class="text-[8px] font-medium text-rose-200/80 mt-0.5 text-center leading-tight">Rest/Walk</span>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    // Render 7-Day Forecast in Drawer
+    function renderForecastDrawer(dailyForecast) {
+      const container = document.getElementById('forecastItemsContainer');
+      if (!dailyForecast || dailyForecast.length === 0) {
+        container.innerHTML = '<p class="py-4 text-center text-slate-400 text-xs">Forecast loading...</p>';
+        return;
+      }
+
+      container.innerHTML = dailyForecast.map((day, idx) => {
+        const isIndoorRec = day.is_indoor_recommended;
+        const badgeLabel = isIndoorRec ? (hasIndoorGym ? 'Indoor Treadmill Rec.' : 'Gentle Indoor Rest / Mat') : 'Outdoor Friendly';
+        const badgeClass = isIndoorRec ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+
+        return `
+          <div class="py-2.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xl">${day.icon || '⛅'}</span>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-extrabold text-slate-900">${day.date_label}</span>
+                  ${idx === 0 ? '<span class="text-[9px] font-black bg-rose-100 text-rose-700 px-1.5 rounded">Today</span>' : ''}
+                </div>
+                <p class="text-[10px] text-slate-500">${day.condition} · Rain: ${day.precip_prob}%</p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <span class="font-extrabold text-slate-800 text-xs">${day.temp_max}° / ${day.temp_min}°</span>
+              <div class="mt-0.5">
+                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${badgeClass}">${badgeLabel}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderWeatherBadge(weather) {
+      const iconEl = document.getElementById('weatherIcon');
+      const textEl = document.getElementById('weatherText');
+      const locEl = document.getElementById('weatherLocation');
+      const badgeEl = document.getElementById('indoorOutdoorBadge');
+
+      textEl.innerText = `${weather.temperature_c}°C · ${weather.relative_humidity}% Humidity · ${weather.condition}`;
+      locEl.innerText = `${weather.city} (Tap for 7-day forecast ➔)`;
+
+      if (weather.is_rain) {
+        iconEl.innerText = '🌧️';
+        badgeEl.innerText = hasIndoorGym ? 'Treadmill Pivot' : 'Indoor Rest / Walk';
+        badgeEl.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700';
+      } else if (weather.is_extreme_heat) {
+        iconEl.innerText = '🔥';
+        badgeEl.innerText = hasIndoorGym ? 'AC Treadmill Pivot' : 'Shaded Low-Intensity';
+        badgeEl.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+      } else {
+        iconEl.innerText = '⛅';
+        badgeEl.innerText = 'Outdoor Mindful';
+        badgeEl.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+      }
+    }
+
+    // Excuse Chips Interaction (Block 2)
+    document.querySelectorAll('.excuse-chip').forEach(chip => {
+      chip.onclick = async () => {
+        currentFeeling = chip.dataset.feeling;
+        const weather = cachedDashboardData?.weather || {};
+        const profile = cachedDashboardData?.profile || {};
+        adaptTipsAndMovement(currentFeeling, weather, profile);
+        await fetch('/api/checkin', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({user_id: USER_ID, daily_feeling: currentFeeling, notes: '1-Tap Excuse check-in'})
+        });
+      };
+    });
+
+    function adaptTipsAndMovement(feeling, weather, profile) {
+      const badge = document.getElementById('activeCheckinBadge');
+      const psychCue = document.getElementById('psychologistCue');
+      const sciTip = document.getElementById('scientistTip');
+      const sciHeader = document.getElementById('scientistHeader');
+
+      const typeTag = document.getElementById('movementTypeTag');
+      const nameEl = document.getElementById('movementName');
+      const rpeTag = document.getElementById('rpeTag');
+      const stepsEl = document.getElementById('movementSteps');
+
+      badge.innerText = `Today's State: Checked In ${feeling}`;
+
+      const isMiserableWeather = weather.is_rain || weather.is_extreme_heat;
+      const walkBase = profile.walking_baseline || selectedWalkingBaseline;
+      const runBase = profile.running_baseline || selectedRunningBaseline;
+      const isActiveWalker = walkBase.includes('Active Walker');
+      const isBeginnerRunner = runBase.includes('Beginner');
+
+      // 1. Weather & Thermoregulation Adaptation in Scientist Tip
+      if (weather.is_extreme_heat) {
+        sciHeader.innerText = 'Scientist: Heat & Luteal Thermoregulation';
+        sciTip.innerText = `At ${weather.temperature_c}°C with ${weather.relative_humidity}% humidity, sweat evaporation drops significantly. In the luteal phase, progesterone raises resting core temperature by ~0.4°C. Compound heat increases cardiac drift—sip electrolyte water and drop pace by 30-45s/km.`;
+      } else if (weather.is_rain) {
+        sciHeader.innerText = 'Scientist: Wet Weather & Joint Traction';
+        sciTip.innerText = `Cold rain tightens connective tissues and increases slip friction. Keep movements fluid and warm up indoor hip flexors for 3 minutes before any run.`;
+      } else if (isActiveWalker && isBeginnerRunner) {
+        sciHeader.innerText = 'Scientist: Active Walker + Run/Walk Intervals';
+        sciTip.innerText = `Because you already walk 8,000–10,000+ steps/day, your aerobic engine is solid! We focus on gentle run/walk intervals (1m jog / 2m walk) to build running-specific Achilles and shin resilience without basic walking fluff.`;
+      } else {
+        sciHeader.innerText = 'Scientist: Baselines & Gentle Physiology';
+        sciTip.innerText = `Current weather is mild (${weather.temperature_c}°C). Ideal for aerobic pacing. Sip warm water before heading out to ease uterine and core tension.`;
+      }
+
+      // 2. Movement Recommendation (Indoor Gym Pivot vs Outdoor vs Baseline)
+      if (feeling.includes('Cramps')) {
+        psychCue.innerText = 'The Restorative Permission Slip: A gentle 10-minute stroll or resting with a heating pad counts 100% as showing up. Never break momentum with guilt.';
+        typeTag.innerText = 'Adapted: Gentle Pelvic Relief';
+        typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200';
+        nameEl.innerText = isMiserableWeather && hasIndoorGym ? 'Treadmill Gentle Flat Stroll (12m)' : 'Restorative Pelvic Relief Walk (15m)';
+        rpeTag.innerText = 'Target RPE: 1-2/10';
+        stepsEl.innerHTML = `
+          <p>• <strong>Warm-up (3m):</strong> Slow standing pelvic circles & easy leg swings.</p>
+          <p>• <strong>Main Set (10m):</strong> Soft walking at 0% incline (effortless flat stroll).</p>
+          <p>• <strong>Cool-down (2m):</strong> 10 slow breaths with hands gently resting on lower belly.</p>
+        `;
+      } else if (isMiserableWeather) {
+        // Unsafe / Miserable Weather: Pivot
+        if (hasIndoorGym) {
+          typeTag.innerText = weather.is_rain ? 'Indoor Pivot: Rain Treadmill' : 'Indoor Pivot: Heat & AC Treadmill';
+          typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200';
+          nameEl.innerText = 'Engaging Indoor Treadmill Intervals (20m)';
+          rpeTag.innerText = 'Target RPE: 3-4/10';
+          psychCue.innerText = 'Treadmill Mental Focus: To beat treadmill boredom, divide time into three 6-minute mental chapters (podcast, cadence counting, deep breathing).';
+          stepsEl.innerHTML = `
+            <p>• <strong>Warm-up (3m):</strong> 0% incline easy walk at conversational speed.</p>
+            <p>• <strong>Main Set (15m):</strong> Alternating 2m easy jog at 1% incline / 2m walking at 2.5% incline (keeps glutes active without pavement pounding).</p>
+            <p>• <strong>Cool-down (2m):</strong> 0% incline slow walk to bring heart rate below 110 bpm.</p>
+          `;
+        } else {
+          typeTag.innerText = 'Indoor Mobility & Rest Day';
+          typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200';
+          nameEl.innerText = 'Indoor Gentle Mat Mobility & Core (18m)';
+          rpeTag.innerText = 'Target RPE: 1-2/10';
+          psychCue.innerText = 'Zero-Guilt Weather Rule: Severe weather counts as an official recovery day. Preserving joints and nervous system bandwidth is high-performance consistency.';
+          stepsEl.innerHTML = `
+            <p>• <strong>Warm-up (3m):</strong> Cat-cow and child pose deep breathing.</p>
+            <p>• <strong>Main Set (12m):</strong> Hip flexor glides, gentle glute bridges, and runner lunges on a soft rug or mat.</p>
+            <p>• <strong>Cool-down (3m):</strong> Legs-up-the-wall restorative rest with soothing tea.</p>
+          `;
+        }
+      } else if (isActiveWalker && isBeginnerRunner) {
+        // Baseline tailored: Run/walk interval adaptation
+        psychCue.innerText = 'Tendon Adaptation Mindset: Walking builds your engine; gentle run intervals teach your tendons to spring. No rush—you have an amazing walking foundation.';
+        typeTag.innerText = 'Aerobic Run/Walk Intervals';
+        typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+        nameEl.innerText = 'Run/Walk Impact Introduction (22m)';
+        rpeTag.innerText = 'Target RPE: 3-4/10';
+        stepsEl.innerHTML = `
+          <p>• <strong>Warm-up (3m):</strong> Brisk walking and gentle ankle circles.</p>
+          <p>• <strong>Main Set (16m):</strong> 1m soft jog / 2m brisk walk intervals (6 rounds, low impact).</p>
+          <p>• <strong>Cool-down (3m):</strong> Slow walk and gentle calf stretch against a curb or wall.</p>
+        `;
+      } else if (feeling.includes('PMS') || feeling.includes('Low Mood')) {
+        psychCue.innerText = '5-4-3-2-1 Sensory Grounding: Notice 5 things you can see, 4 tactile touches, and 3 gentle sounds to interrupt anxious rumination.';
+        typeTag.innerText = 'Adapted: Dopamine Walk/Jog';
+        typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+        nameEl.innerText = 'Mindful Mood Lift Intervals (20m)';
+        rpeTag.innerText = 'Target RPE: 3/10';
+        stepsEl.innerHTML = `
+          <p>• <strong>Warm-up (3m):</strong> Shoulder rolls and breezy walking.</p>
+          <p>• <strong>Main Set (14m):</strong> 1m soft jog / 2m walk intervals without looking at pace.</p>
+          <p>• <strong>Cool-down (3m):</strong> Chest opening breaths in natural daylight.</p>
+        `;
+      } else if (feeling.includes('Sleep')) {
+        psychCue.innerText = 'The Sunlight Reset: Exposing your eyes to natural outdoor morning light resets your circadian rhythm for tonight\'s sleep, even on short walks.';
+        typeTag.innerText = 'Adapted: Low Cortisol Stroll';
+        typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200';
+        nameEl.innerText = 'Nature Daylight Reset Walk (15m)';
+        rpeTag.innerText = 'Target RPE: 2/10';
+        stepsEl.innerHTML = `
+          <p>• <strong>Warm-up (2m):</strong> Light arm swings.</p>
+          <p>• <strong>Main Set (12m):</strong> Continuous easy stroll in fresh air.</p>
+          <p>• <strong>Cool-down (1m):</strong> Hydration pause and deep exhale.</p>
+        `;
+      } else {
+        psychCue.innerText = 'Cadence Rhythm: Match your breathing to 3 footsteps in, 3 footsteps out to experience mental flow.';
+        typeTag.innerText = 'Scheduled Run Day';
+        typeTag.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+        nameEl.innerText = 'Mindful Flow Run (22m)';
+        rpeTag.innerText = 'Target RPE: 4/10';
+        stepsEl.innerHTML = `
+          <p>• <strong>Warm-up (3m):</strong> Dynamic hip openers and light jogging.</p>
+          <p>• <strong>Main Set (16m):</strong> Continuous comfortable run at conversation pace.</p>
+          <p>• <strong>Cool-down (3m):</strong> Easy walking and quad stretches.</p>
+        `;
+      }
+    }
+
+    // 1-Tap Make it gentler bailout button
+    document.getElementById('gentlerBailoutBtn').onclick = () => {
+      const stepsEl = document.getElementById('movementSteps');
+      stepsEl.innerHTML = `
+        <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-200/80 space-y-1">
+          <p class="text-rose-700 font-extrabold text-xs">🍃 1-Tap Bailout Activated (Anti-Guilt):</p>
+          <p>• <strong>Option A:</strong> 10-minute quiet stroll or slow treadmill flat walk.</p>
+          <p>• <strong>Option B:</strong> 12 minutes legs-up-the-wall with a warm cup of tea.</p>
+          <p class="text-[10px] text-slate-500 italic">This counts 100% as showing up today!</p>
+        </div>
+      `;
+    };
+
+    // Log Complete for Today
+    document.getElementById('logCompleteBtn').onclick = async () => {
+      await fetch('/api/workout/manual', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          user_id: USER_ID,
+          workout_type: hasIndoorGym ? 'Treadmill Run' : 'Mindful Walk',
+          duration_minutes: 20,
+          distance_km: 2.2,
+          rpe: 3,
+          feeling_notes: 'Completed scheduled movement'
+        })
+      });
+      alert('🌸 Great job showing up! Session logged toward your weekly momentum.');
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      renderDashboard(await res.json());
+    };
+
+    function renderHistoryList(activities) {
+      const listEl = document.getElementById('activityHistoryList');
+      if (!activities || activities.length === 0) {
+        listEl.innerHTML = '<div class="py-4 text-center text-xs text-slate-400">No activities logged yet. Tap "+ Log Workout".</div>';
+        return;
+      }
+
+      listEl.innerHTML = activities.map(act => {
+        const isGoogle = act.source && act.source.includes('Google');
+        return `
+          <div class="py-3 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">${act.type.includes('Run') ? '🏃‍♀️' : '🚶‍♀️'}</span>
+              <div>
+                <p class="font-bold text-slate-900">${act.type} — ${act.duration_minutes}m ${act.distance_km ? `(${act.distance_km}km)` : ''}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-[10px] text-slate-400">${act.date}</span>
+                  <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${isGoogle ? 'bg-slate-100 text-slate-600' : 'bg-rose-50 text-rose-600'}">
+                    ${isGoogle ? 'Google Health' : 'Manual'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <span class="px-2 py-1 rounded-lg bg-rose-50 text-rose-700 font-extrabold text-[11px] border border-rose-100">
+              RPE ${act.rpe || 4}/10
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Manual Workout Form Submission
+    document.getElementById('manualWorkoutForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const payload = {
+        user_id: USER_ID,
+        workout_type: document.getElementById('manType').value,
+        duration_minutes: parseInt(document.getElementById('manDuration').value),
+        distance_km: parseFloat(document.getElementById('manDistance').value) || null,
+        rpe: parseInt(document.getElementById('manRpe').value),
+        feeling_notes: 'Manual entry'
+      };
+      await fetch('/api/workout/manual', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      manualWorkoutModal.classList.add('hidden');
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      renderDashboard(await res.json());
+    };
+
+    // Chat Drawer Message Handling
+    chatForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+      chatInput.value = '';
+
+      const userBubble = document.createElement('div');
+      userBubble.className = 'bg-slate-900 text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[85%] font-medium';
+      userBubble.innerText = text;
+      chatMessages.appendChild(userBubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      const thinking = document.createElement('div');
+      thinking.className = 'bg-rose-50 text-slate-500 p-3 rounded-2xl rounded-tl-none border border-rose-100 max-w-[85%] italic';
+      thinking.innerText = 'Coach is thinking...';
+      chatMessages.appendChild(thinking);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({user_id: USER_ID, message: text})
+        });
+        const d = await res.json();
+        thinking.remove();
+
+        const replyBubble = document.createElement('div');
+        replyBubble.className = 'bg-rose-50 text-slate-800 p-3.5 rounded-2xl rounded-tl-none border border-rose-100 whitespace-pre-wrap leading-relaxed';
+        replyBubble.innerText = d.reply || 'I am right here with you!';
+        chatMessages.appendChild(replyBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // If user shared how they're feeling, update tips
+        if (text.toLowerCase().includes('cramp') || text.toLowerCase().includes('heavy') || text.toLowerCase().includes('period')) {
+          currentFeeling = 'Cramps / Heavy';
+        } else if (text.toLowerCase().includes('tired') || text.toLowerCase().includes('sleep') || text.toLowerCase().includes('exhausted')) {
+          currentFeeling = 'Zero Sleep / Overwhelmed';
+        } else if (text.toLowerCase().includes('sad') || text.toLowerCase().includes('mood') || text.toLowerCase().includes('pms')) {
+          currentFeeling = 'PMS / Low Mood';
+        }
+        adaptTipsAndMovement(currentFeeling, cachedDashboardData?.weather || {}, cachedDashboardData?.profile || {});
+      } catch (err) {
+        thinking.innerText = 'Sorry, could not reach coach. Please try again.';
+      }
+    };
+
+    // Vault Deletions
+    document.getElementById('disconnectHealthBtn').onclick = async () => {
+      await fetch('/api/delete-data', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, mode: 'disconnect_google_health'})
+      });
+      alert('Google Health disconnected and synced activities cleared.');
+      vaultModal.classList.add('hidden');
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      renderDashboard(await res.json());
+    };
+
+    document.getElementById('wipeSymptomsBtn').onclick = async () => {
+      await fetch('/api/delete-data', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, mode: 'by_category', category: 'symptoms_and_mood'})
+      });
+      alert('Check-in and symptom logs wiped.');
+      vaultModal.classList.add('hidden');
+    };
+
+    document.getElementById('wipeWorkoutsBtn').onclick = async () => {
+      await fetch('/api/delete-data', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: USER_ID, mode: 'by_category', category: 'workout_logs'})
+      });
+      alert('Workout history wiped.');
+      vaultModal.classList.add('hidden');
+      const res = await fetch(`/api/dashboard/${USER_ID}?demo_weather=${currentDemoWeather}`);
+      renderDashboard(await res.json());
+    };
+
+    document.getElementById('wipeAllBtn').onclick = async () => {
+      if (confirm('Permanently purge all data and restart onboarding?')) {
+        await fetch('/api/delete-data', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({user_id: USER_ID, mode: 'all'})
+        });
+        location.reload();
+      }
+    };
+
+    // Start App
+    initApp();
+  </script>
+</body>
+</html>
